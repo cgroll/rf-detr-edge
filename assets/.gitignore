@@ -1,0 +1,9 @@
+# Model files (tracked by DVC)
+*.pth
+*.onnx
+
+# Test images
+test_img_*.jpg
+
+# Inference outputs
+inference_output*.jpg

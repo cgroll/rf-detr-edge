@@ -1,0 +1,80 @@
+schema: '2.0'
+stages:
+  export_onnx:
+    cmd: python export_onnx.py
+    deps:
+    - path: assets/checkpoint_best_regular.pth
+      hash: md5
+      md5: bd3c878a01176e6a8cc456d7c783d27a
+      size: 408167690
+    - path: export_onnx.py
+      hash: md5
+      md5: ed42a1c7473cde1a16eb8f84edd2ee7d
+      size: 693
+    outs:
+    - path: assets/rfdetr_seg_fp32.onnx
+      hash: md5
+      md5: c1a1f3c0ef60031d0db3b0828d85ebfb
+      size: 133020877
+  quantize_onnx:
+    cmd: python quantize_onnx.py
+    deps:
+    - path: assets/rfdetr_seg_fp32.onnx
+      hash: md5
+      md5: c1a1f3c0ef60031d0db3b0828d85ebfb
+      size: 133020877
+    - path: quantize_onnx.py
+      hash: md5
+      md5: d964379bb670e78cf0a3d38e7f2af976
+      size: 767
+    outs:
+    - path: assets/rfdetr_seg_uint8.onnx
+      hash: md5
+      md5: 24a47513dc7033bbbdd4b3d0741db9c9
+      size: 42228920
+  inference_fp32:
+    cmd: python -c "from test_onnx_inference import run_inference; 
+      run_inference('assets/rfdetr_seg_fp32.onnx', 
+      'assets/test_img_000000020014596465.jpg', 
+      'assets/inference_output_fp32.jpg')"
+    deps:
+    - path: assets/rfdetr_seg_fp32.onnx
+      hash: md5
+      md5: c1a1f3c0ef60031d0db3b0828d85ebfb
+      size: 133020877
+    - path: assets/test_img_000000020014596465.jpg
+      hash: md5
+      md5: 017bd7de5abeaab53bb665d76fa62233
+      size: 1334908
+    - path: test_onnx_inference.py
+      hash: md5
+      md5: 4b31d5206b59affb5a44076fc1b0b99a
+      size: 9822
+    outs:
+    - path: assets/inference_output_fp32.jpg
+      hash: md5
+      md5: b10fe037dacdf95690e1747b06876170
+      size: 1546388
+  inference_uint8:
+    cmd: python -c "from test_onnx_inference import run_inference; 
+      run_inference('assets/rfdetr_seg_uint8.onnx', 
+      'assets/test_img_000000020014596465.jpg', 
+      'assets/inference_output_uint8.jpg')"
+    deps:
+    - path: assets/rfdetr_seg_uint8.onnx
+      hash: md5
+      md5: 24a47513dc7033bbbdd4b3d0741db9c9
+      size: 42228920
+    - path: assets/test_img_000000020014596465.jpg
+      hash: md5
+      md5: 017bd7de5abeaab53bb665d76fa62233
+      size: 1334908
+    - path: test_onnx_inference.py
+      hash: md5
+      md5: 4b31d5206b59affb5a44076fc1b0b99a
+      size: 9822
+    outs:
+    - path: assets/inference_output_uint8.jpg
+      hash: md5
+      md5: 6347acb9d20c16edb94b64ecf9193f56
+      size: 1546751

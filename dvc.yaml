@@ -1,0 +1,34 @@
+stages:
+  export_onnx:
+    cmd: python export_onnx.py
+    deps:
+      - export_onnx.py
+      - assets/checkpoint_best_regular.pth
+    outs:
+      - assets/rfdetr_seg_fp32.onnx
+
+  quantize_onnx:
+    cmd: python quantize_onnx.py
+    deps:
+      - quantize_onnx.py
+      - assets/rfdetr_seg_fp32.onnx
+    outs:
+      - assets/rfdetr_seg_uint8.onnx
+
+  inference_fp32:
+    cmd: python -c "from test_onnx_inference import run_inference; run_inference('assets/rfdetr_seg_fp32.onnx', 'assets/test_img_000000020014596465.jpg', 'assets/inference_output_fp32.jpg')"
+    deps:
+      - test_onnx_inference.py
+      - assets/rfdetr_seg_fp32.onnx
+      - assets/test_img_000000020014596465.jpg
+    outs:
+      - assets/inference_output_fp32.jpg
+
+  inference_uint8:
+    cmd: python -c "from test_onnx_inference import run_inference; run_inference('assets/rfdetr_seg_uint8.onnx', 'assets/test_img_000000020014596465.jpg', 'assets/inference_output_uint8.jpg')"
+    deps:
+      - test_onnx_inference.py
+      - assets/rfdetr_seg_uint8.onnx
+      - assets/test_img_000000020014596465.jpg
+    outs:
+      - assets/inference_output_uint8.jpg
